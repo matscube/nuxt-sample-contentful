@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div>
-      <logo />
       <h1 class="title">
         nuxt-sample-contentful
       </h1>
@@ -30,11 +29,22 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import Logo from '~/components/Logo.vue'
+import { createAppClient } from '@/plugins/contentful'
+const client = createAppClient()
 
 export default Vue.extend({
-  components: {
-    Logo
+  async asyncData({ env }): Promise<void> {
+    let posts = []
+    await client.getEntries({
+      content_type: env.CTF_BLOG_POST_TYPE_ID,
+      order: '-sys.createdAt'
+    }).then((res: any) => {
+      res.items.forEach((item: any) => {
+        console.info(item)
+      })
+    }).catch((error: any) => {
+      console.error('error: ', error)
+    })
   }
 })
 </script>
